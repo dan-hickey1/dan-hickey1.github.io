@@ -58,8 +58,12 @@
 
           <!-- Other pages -->
           {% assign sorted_pages = site.pages | sort: 'nav_order' %}
+          {% assign nav_emojis = "🐧,🐻‍❄️,🦫" | split: "," %}
+          {% assign nav_index = -1 %}
           {% for p in sorted_pages %}
             {% if p.nav and p.autogen == null %}
+              {% assign nav_index = nav_index | plus: 1 %}
+              <li class="nav-separator" aria-hidden="true">{{ nav_emojis[nav_index] }}</li>
               {% if p.dropdown %}
                 {% assign has_active_child = false %}
                 {% for child in p.children %}
@@ -97,13 +101,17 @@
               {% else %}
                 {% assign parent_link = p.permalink | remove: 'index.html' %}
                 <li class="nav-item {% if page.url contains parent_link %}active{% endif %}">
-                  {% if p.permalink contains '/blog/' %}{% assign url = '/blog/' %} {% else %}{% assign url = p.url %}{% endif %}
-                  <a class="nav-link" href="{{ url | relative_url }}">
-                    {{- p.title }}
-                    {% if page.url contains p.url %}
-                      <span class="sr-only">(current)</span>
-                    {% endif %}
-                  </a>
+                  {% if p.nav_link %}
+                    <a class="nav-link" href="{{ p.nav_link }}" target="_blank">{{- p.title }}</a>
+                  {% else %}
+                    {% if p.permalink contains '/blog/' %}{% assign url = '/blog/' %} {% else %}{% assign url = p.url %}{% endif %}
+                    <a class="nav-link" href="{{ url | relative_url }}">
+                      {{- p.title }}
+                      {% if page.url contains p.url %}
+                        <span class="sr-only">(current)</span>
+                      {% endif %}
+                    </a>
+                  {% endif %}
                 </li>
               {% endif %}
             {% endif %}
@@ -117,12 +125,12 @@
             </li>
           {% endif %}
           {% if site.enable_darkmode %}
-            <!-- Toogle theme mode -->
+            <!-- Toggle theme mode -->
             <li class="toggle-container">
               <button id="light-toggle" title="Change theme">
-                <i class="ti ti-sun-moon" id="light-toggle-system"></i>
-                <i class="ti ti-moon-filled" id="light-toggle-dark"></i>
-                <i class="ti ti-sun-filled" id="light-toggle-light"></i>
+                <span id="light-toggle-lavender">🪻</span>
+                <span id="light-toggle-light">🌞</span>
+                <span id="light-toggle-night">🌛</span>
               </button>
             </li>
           {% endif %}

@@ -1,4 +1,10 @@
 source 'https://rubygems.org'
+gem 'observer'
+gem 'ostruct'
+gem 'bigdecimal'
+gem 'mutex_m'
+gem 'drb'
+gem 'base64'
 group :jekyll_plugins do
     gem 'classifier-reborn'
     gem 'jekyll'

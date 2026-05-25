@@ -1,14 +1,14 @@
 // Has to be in the head tag, otherwise a flicker effect will occur.
 
-// Toggle through light, dark, and system theme settings.
+// Toggle through lavender, light, and night theme settings.
 let toggleThemeSetting = () => {
   let themeSetting = determineThemeSetting();
-  if (themeSetting == "system") {
+  if (themeSetting == "lavender") {
     setThemeSetting("light");
   } else if (themeSetting == "light") {
-    setThemeSetting("dark");
+    setThemeSetting("night");
   } else {
-    setThemeSetting("system");
+    setThemeSetting("lavender");
   }
 };
 
@@ -24,6 +24,7 @@ let setThemeSetting = (themeSetting) => {
 // Apply the computed dark or light theme to the website.
 let applyTheme = () => {
   let theme = determineComputedTheme();
+  let themeSetting = determineThemeSetting();
 
   transTheme();
   setHighlight(theme);
@@ -50,7 +51,12 @@ let applyTheme = () => {
     setVegaLiteTheme(theme);
   }
 
-  document.documentElement.setAttribute("data-theme", theme);
+  // Set data-theme CSS attribute: night maps to "dark", lavender stays "lavender", light stays "light"
+  if (themeSetting == "night") {
+    document.documentElement.setAttribute("data-theme", "dark");
+  } else {
+    document.documentElement.setAttribute("data-theme", themeSetting);
+  }
 
   // Add class to tables.
   let tables = document.getElementsByTagName("table");
@@ -78,7 +84,7 @@ let applyTheme = () => {
   // Updates the background of medium-zoom overlay.
   if (typeof medium_zoom !== "undefined") {
     medium_zoom.update({
-      background: getComputedStyle(document.documentElement).getPropertyValue("--global-bg-color") + "ee", // + 'ee' for trasparency.
+      background: getComputedStyle(document.documentElement).getPropertyValue("--global-bg-color") + "ee", // + 'ee' for transparency.
     });
   }
 };
@@ -205,30 +211,19 @@ let transTheme = () => {
   }, 500);
 };
 
-// Determine the expected state of the theme toggle, which can be "dark", "light", or
-// "system". Default is "system".
+// Determine the expected state of the theme toggle: "lavender", "light", or "night". Default is "lavender".
 let determineThemeSetting = () => {
   let themeSetting = localStorage.getItem("theme");
-  if (themeSetting != "dark" && themeSetting != "light" && themeSetting != "system") {
-    themeSetting = "system";
+  if (themeSetting != "lavender" && themeSetting != "light" && themeSetting != "night") {
+    themeSetting = "lavender";
   }
   return themeSetting;
 };
 
-// Determine the computed theme, which can be "dark" or "light". If the theme setting is
-// "system", the computed theme is determined based on the user's system preference.
+// Determine the computed base theme for subsystems: "dark" (night) or "light" (lavender/light).
 let determineComputedTheme = () => {
   let themeSetting = determineThemeSetting();
-  if (themeSetting == "system") {
-    const userPref = window.matchMedia;
-    if (userPref && userPref("(prefers-color-scheme: dark)").matches) {
-      return "dark";
-    } else {
-      return "light";
-    }
-  } else {
-    return themeSetting;
-  }
+  return themeSetting == "night" ? "dark" : "light";
 };
 
 let initTheme = () => {
